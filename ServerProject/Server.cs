@@ -7,6 +7,7 @@ using ClientProject;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Diagnostics;
 
 namespace ServerProject
 {
@@ -164,6 +165,8 @@ namespace ServerProject
                     case 1:
                         {
                             StartBrowser(ID_choice);
+                            Console.WriteLine(GetMsg().ToString());
+                            Thread.Sleep(1000);
                             break;
                         }
                     case 2:
@@ -175,7 +178,7 @@ namespace ServerProject
                         }
                     case 3:
                         {
-                            ChooseDirectory(ID_choice);
+                            SearchFiles(ID_choice);
 
 
                             break;
@@ -186,14 +189,6 @@ namespace ServerProject
                         Console.Clear();
                         break;
                 }
-            }
-            try
-            {
-                Console.WriteLine(GetMsg().ToString());
-                Console.ReadLine();
-            }
-            catch (Exception)
-            {
             }
         }
         public void SendBrowser(int choice)
@@ -262,62 +257,39 @@ namespace ServerProject
                 }
             }
         }
-        public void ChooseDirectory(int ID_choice)
+        public void SearchFiles(int ID_choice)
         {
-            int choiceDisk = 0;
-            string directory = String.Empty;
-           
+            string tmp = String.Empty;
             lock (clients)
             {
-
                 try
                 {
-                    Console.WriteLine("Which Disk you want to check C: - [1] D: - [2]");
-                    choiceDisk = int.Parse(Console.ReadLine());
-                    Console.Clear();
-                    Console.WriteLine("Enter a directory name");
-                    directory = Console.ReadLine();
-                    Console.Clear();
-                    switch (choiceDisk)
-                    {
-                        case 1:
-                            {
-                                for (int i = 0; i < clients.Count; i++)
-                                {
-                                    if (clients[i].ID == ID_choice)
-                                    {
-                                        SendMsg(@"C:\" + directory, i);
-
-                                    }
-                                }
-                                break;
-                            }
-
-                        case 2:
-                            {
-                                for (int i = 0; i < clients.Count; i++)
-                                {
-                                    if (clients[i].ID == ID_choice)
-                                    {
-                                        SendMsg(@"D:\" + directory, i);
-                                    }
-                                }
-                                break;
-                            }
-                        default:
-                            break;
-                            Console.Clear();
-                    }
-
-                    Console.WriteLine("All files which you can start\n" + GetMsg().ToString());
-                    Console.ReadLine();
+                    SendMsg("search\n", ID_choice);
+                    tmp = GetMsg().ToString();
                 }
                 catch (Exception)
                 {
 
-                    Console.WriteLine("You can choose only numbs!");
+                   
                 }
+                string[] words = tmp.Split("\n");
 
+                for (int i = 0; i < words.Length-1; i++)
+                {
+                    Console.WriteLine($"Elemts:[{i}] " + $"{words[i]}");
+                }
+                Console.WriteLine("Choose element to start him");
+                try
+                {
+                    SendProcess(words[int.Parse(Console.ReadLine())], ID_choice);
+                    Console.WriteLine(GetMsg().ToString());
+                }
+                catch (Exception)
+                {
+
+                    
+                }
+                Console.ReadLine();
             }
         }
         public void ThrowDisconnect(int ID_choice)
@@ -379,6 +351,10 @@ namespace ServerProject
                     clients.Remove(item);
                 }
             }
+        }
+        public void SendProcess(string app,int ID_choice)
+        {
+          SendMsg("start\n" + $"{app}", ID_choice);
         }
 
     }
