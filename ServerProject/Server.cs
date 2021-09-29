@@ -279,15 +279,16 @@ namespace ServerProject
                     Console.WriteLine($"Elemts:[{i}] " + $"{words[i]}");
                 }
                 Console.WriteLine("Choose element to start him");
+                
                 try
                 {
+                    Console.WriteLine(words[int.Parse(Console.ReadLine())]);
                     SendProcess(words[int.Parse(Console.ReadLine())], ID_choice);
                     Console.WriteLine(GetMsg().ToString());
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
-                    
+                    Console.WriteLine(ex.Message); 
                 }
                 Console.ReadLine();
             }

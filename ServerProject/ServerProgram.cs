@@ -10,17 +10,13 @@ namespace ServerProject
 {
     class ServerProgram
     {
-
         static void Main(string[] args)
         {
             Server server = new Server();
             server.StartServer();
-          
             try
             {
                 Task.Factory.StartNew(() => server.Connects());
-
-               
                 while (true)
                 {
                     
@@ -28,10 +24,7 @@ namespace ServerProject
                     Console.WriteLine("Chooce an action: \nExample: 1");
                     try
                     {
-
-
                         server.SendCommand(int.Parse(Console.ReadLine()));
-                       
                         Console.Clear();
                     }
                     catch (Exception)

