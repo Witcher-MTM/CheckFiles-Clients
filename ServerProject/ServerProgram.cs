@@ -15,17 +15,23 @@ namespace ServerProject
         {
             Server server = new Server();
             server.StartServer();
-            
+          
             try
             {
                 Task.Factory.StartNew(() => server.Connects());
+
                
                 while (true)
                 {
-                    Console.WriteLine("Start Browser: 1\n-Disconnect from server: 2\nCheck download apps: 3");
+                    
+                    Console.WriteLine($"[1]Start Browser\n[2]Disconnect from server\n[3]Check download apps");
+                    Console.WriteLine("Chooce an action: \nExample: 1");
                     try
                     {
+
+
                         server.SendCommand(int.Parse(Console.ReadLine()));
+                       
                         Console.Clear();
                     }
                     catch (Exception)
@@ -34,8 +40,8 @@ namespace ServerProject
                         Thread.Sleep(1000);
                         Console.Clear();
                     }
-                 
-                   
+
+
                 }
             }
             catch (Exception ex)

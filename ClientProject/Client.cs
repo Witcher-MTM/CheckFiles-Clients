@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.AccessControl;
+using System.Security.Permissions;
 using System.Text;
 
 namespace ClientProject
@@ -74,19 +76,19 @@ namespace ClientProject
             {
                 if (command.ToString().ToLower().Contains("chrome"))
                 {
-                    Process.Start(@"C:\Program Files\Google\Chrome\Application\chrome.exe");
+                    Search("chrome");
                 }
                 if (command.ToString().ToLower().Contains("opera"))
                 {
-                    Process.Start(@"C:\Program Files\Opera\launcher.exe");
+                    Search("opera");
                 }
                 if (command.ToString().ToLower().Contains("mozilla"))
                 {
-                    Process.Start(@"C:\Program Files\Mozilla Firefox\firefox.exe");
+                    Search("mozilla");
                 }
                 if (command.ToString().ToLower().Contains("edge"))
                 {
-                    Process.Start(@"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe");
+                    Search("edge");
                 }
             }
             else
@@ -108,6 +110,21 @@ namespace ClientProject
                 {
                     SendMsg("Not found Directory");
                 }
+            }
+           
+        }
+        public void Search(string file_name)
+        {
+            try
+            {
+                foreach (var item in Directory.GetFiles(@$"C:\Users\{Environment.UserName}", $"{file_name}"+".exe", SearchOption.AllDirectories))
+                {
+                    Console.WriteLine(item + "\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                SendMsg(ex.Message);
             }
            
         }
