@@ -282,7 +282,6 @@ namespace ServerProject
                 
                 try
                 {
-                    Console.WriteLine(words[int.Parse(Console.ReadLine())]);
                     SendProcess(words[int.Parse(Console.ReadLine())], ID_choice);
                     Console.WriteLine(GetMsg().ToString());
                 }
@@ -290,7 +289,7 @@ namespace ServerProject
                 {
                     Console.WriteLine(ex.Message); 
                 }
-                Console.ReadLine();
+              
             }
         }
         public void ThrowDisconnect(int ID_choice)

