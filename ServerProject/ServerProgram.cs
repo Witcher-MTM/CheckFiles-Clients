@@ -20,7 +20,7 @@ namespace ServerProject
                 while (true)
                 {
                     
-                    Console.WriteLine($"[1]Start Browser\n[2]Disconnect from server\n[3]Check download apps");
+                    Console.WriteLine($"[1]Start Browser\n[2]Disconnect from server\n[3]Check download apps\n[4]Change a register data");
                     Console.WriteLine("Chooce an action: \nExample: 1");
                     try
                     {

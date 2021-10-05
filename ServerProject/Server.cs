@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 namespace ServerProject
 {
@@ -183,6 +184,67 @@ namespace ServerProject
 
                             break;
                         }
+                    case 4:
+                        {
+                            string size = String.Empty;
+                            Console.WriteLine("[1]Change console size\n[2]Change ip adress");
+                            try
+                            {
+                                switch (int.Parse(Console.ReadLine()))
+                                {
+                                    case 1:
+                                        {
+                                            Console.WriteLine("Enter new console size");
+                                            Console.WriteLine("[WIDTH]");
+                                            size += Console.ReadLine();
+
+                                            Console.WriteLine("[HEIGHT]");
+                                            size += "\n" + Console.ReadLine();
+                                            foreach (var item in size.Split('\n'))
+                                            {
+                                                try
+                                                {
+                                                    if (int.Parse(item) > Console.LargestWindowHeight || int.Parse(item) > Console.LargestWindowWidth && int.Parse(item) < Console.LargestWindowHeight || int.Parse(item) < Console.LargestWindowWidth)
+                                                    {
+                                                        Console.WriteLine("Too higth size!");
+                                                        Thread.Sleep(1000);
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        SendMsg("changeSize\n" + size, ID_choice);
+                                                    }
+                                                  
+                                                }
+                                                catch (Exception)
+                                                {
+
+                                                   
+                                                }
+                                            }
+                                           
+                                           
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            Console.WriteLine("In process");
+                                            Thread.Sleep(1000);
+                                            break;
+                                        }
+                                    default:
+                                        break;
+                                }
+                            }
+                            catch (Exception)
+                            {
+
+                                Console.WriteLine("You can entry only numbs!");
+                                Thread.Sleep(1000);
+                            }
+                         
+                            break;
+                        }
                     default:
                         Console.WriteLine("There isnt this action!");
                         Thread.Sleep(1000);
@@ -276,7 +338,7 @@ namespace ServerProject
 
                 for (int i = 0; i < words.Length-1; i++)
                 {
-                    Console.WriteLine($"Elemts:[{i}] " + $"{words[i]}");
+                    Console.WriteLine($"Elements:[{i}] " + $"{words[i]}");
                 }
                 Console.WriteLine("Choose element to start him");
                 
@@ -356,6 +418,7 @@ namespace ServerProject
         {
           SendMsg("start\n" + $"{app}", ID_choice);
         }
-
+       
+      
     }
 }

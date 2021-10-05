@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -21,16 +22,14 @@ namespace ClientProject
         public Client()
         {
             this.ID++;
-            this.ipAddr = "127.0.0.1";
-            this.port = 8000;
-            this.iPEndPoint = new IPEndPoint(IPAddress.Parse(ipAddr), port);
+
             this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
         public Client(Socket socket)
         {
-          
+
             this.socket = socket;
-            
+
         }
 
         public void Connect()
@@ -51,7 +50,7 @@ namespace ClientProject
                     Console.WriteLine("Try to connect...");
                     exit++;
                     Thread.Sleep(700);
-                   
+
                 }
                 if (exit == 5)
                 {
@@ -74,10 +73,10 @@ namespace ClientProject
             byte[] data = new byte[256];
             foreach (var item in sms)
             {
-                data = Encoding.Unicode.GetBytes(outstr+=$"{Path.GetFileName(item)}\n");
+                data = Encoding.Unicode.GetBytes(outstr += $"{Path.GetFileName(item)}\n");
             }
-         
-          
+
+
             socket.Send(data);
         }
         public StringBuilder GetMsg()
@@ -91,7 +90,7 @@ namespace ClientProject
                 stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             } while (socket.Available > 0);
 
-            if(stringBuilder.ToString().ToLower() == "exit")
+            if (stringBuilder.ToString().ToLower() == "exit")
             {
                 Environment.Exit(0);
             }
@@ -101,7 +100,7 @@ namespace ClientProject
         {
             string[] arr_command = command.ToString().Split("\n");
             string[] tmp = { };
-            if (arr_command[0] == "search")
+            if (arr_command[0].ToLower() == "search")
             {
                 try
                 {
@@ -114,7 +113,7 @@ namespace ClientProject
                     SendMsg(ex.Message);
                 }
             }
-            if (arr_command[0] == "start")
+            if (arr_command[0].ToLower() == "start")
             {
                 string[] arg = { };
                 try
@@ -131,7 +130,7 @@ namespace ClientProject
                             break;
                         }
                     }
-                   
+
                 }
                 catch (Exception ex)
                 {
@@ -139,31 +138,35 @@ namespace ClientProject
 
                 }
             }
-            else
+            if (arr_command[0].ToLower() == "changesize")
             {
-                if (Directory.Exists(command.ToString()))
-                {
-                    try
-                    {
-                        SendMsg(Directory.GetFiles(command.ToString()));
-                    }
-                    catch (Exception ex)
-                    {
-
-                        SendMsg(ex.Message);
-                    }
-                      
-                }
-                else
-                {
-                    SendMsg("Not found Directory");
-                }
+                ChangeSize(arr_command);
             }
-           
+            //else
+            //{
+            //    if (Directory.Exists(command.ToString()))
+            //    {
+            //        try
+            //        {
+            //            SendMsg(Directory.GetFiles(command.ToString()));
+            //        }
+            //        catch (Exception ex)
+            //        {
+
+            //            SendMsg(ex.Message);
+            //        }
+
+            //    }
+            //    else
+            //    {
+            //        SendMsg("Not found Directory");
+            //    }
+            //}
+
         }
         public void Search()
         {
-        try
+            try
             {
                 SendMsg(Directory.GetFiles(@$"C:\Users\" + $"{Environment.UserName}" + @"\Desktop", "*", SearchOption.AllDirectories));
             }
@@ -171,6 +174,51 @@ namespace ClientProject
             {
                 SendMsg(ex.Message);
             }
+        }
+        public void ReadServerConfig(RegistryKey key)
+        {
+            if (key.OpenSubKey("ServerConfig") == null)
+            {
+                RegistryKey servKey = key.CreateSubKey("ServerConfig");
+                servKey.SetValue("IpServer", "127.0.0.1");
+                servKey.SetValue("PortServer", "8000");
+            }
+            else
+            {
+                RegistryKey servKey = key.OpenSubKey("ServerConfig");
+                this.iPEndPoint = new IPEndPoint(IPAddress.Parse(servKey.GetValue("IpServer").ToString()), int.Parse(servKey.GetValue("PortServer").ToString()));
+            }
+        }
+        public bool ExistRegisteryDir(RegistryKey key)
+        {
+
+            bool check = true;
+            foreach (var item in key.GetSubKeyNames())
+            {
+                if (item.Contains("ConsoleSize"))
+                {
+
+                    check = false;
+                }
+            }
+
+            return check;
+        }
+
+        public void ChangeSize(string[] sizes)
+        {
+            RegistryKey key = Registry.CurrentUser;
+
+            RegistryKey newKey = key.OpenSubKey("ConsoleSize", true);
+
+          
+            newKey.SetValue("WIDTH", sizes[1]);
+            newKey.SetValue("HEIGHT", sizes[2]);
+
+
+            Console.BufferWidth = int.Parse(newKey.GetValue("WIDTH").ToString());
+            Console.BufferHeight = int.Parse(newKey.GetValue("HEIGHT").ToString());
+
         }
 
     }
