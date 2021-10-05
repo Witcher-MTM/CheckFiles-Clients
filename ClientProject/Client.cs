@@ -75,7 +75,7 @@ namespace ClientProject
             {
                 data = Encoding.Unicode.GetBytes(outstr += $"{Path.GetFileName(item)}\n");
             }
-
+            
 
             socket.Send(data);
         }
